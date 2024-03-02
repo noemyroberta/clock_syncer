@@ -4,7 +4,7 @@ import proto.clock_pb2 as clock
 import proto.clock_pb2_grpc as rpc
 
 def run():
-    channel = grpc.insecure_channel('localhost:50051')
+    channel = grpc.insecure_channel('localhost:30000')
     stub = rpc.ClockSyncStub(channel)
     
     response = stub.Sync(clock.SyncRequest(client_time=int(time.time())))
