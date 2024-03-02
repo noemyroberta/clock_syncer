@@ -11,6 +11,8 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     rpc.add_ClockSyncServicer_to_server(ClockSyncServicer(), server)
+    
+    print('Starting server. Listening...')
     server.add_insecure_port('[::]:30000')
     server.start()
     print("Server started")
