@@ -1,3 +1,4 @@
+from concurrent import futures
 import grpc
 import time
 import proto.clock_pb2 as clock
@@ -8,7 +9,7 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
         return clock.SyncResponse(server_time=int(time.time()))
 
 def serve():
-    server = grpc.server(grpc.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     rpc.add_ClockSyncServicer_to_server(ClockSyncServicer(), server)
     server.add_insecure_port('[::]:30000')
     server.start()
