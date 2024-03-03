@@ -1,5 +1,6 @@
 from concurrent import futures
 import grpc
+import threading
 import time
 import proto.clock_pb2 as clock
 import proto.clock_pb2_grpc as rpc
@@ -59,3 +60,14 @@ class Server():
 if __name__ == '__main__':
     server = Server(ClockSyncServicer())
     server.serve()
+
+    slave_addresses = ['localhost:30010', 'localhost:30012']
+    slave_stubs = {address: rpc.ClockSyncStub(grpc.insecure_channel(address)) for address in slave_addresses}
+
+    update_thread = threading.Thread(target=server.update_slave_times(slave_stubs))
+    update_thread.daemon = True
+    update_thread.start()
+
+    adjust_thread = threading.Thread(target=server.adjust_slave_times(slave_stubs))
+    adjust_thread.daemon = True
+    adjust_thread.start()
