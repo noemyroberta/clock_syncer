@@ -12,22 +12,35 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
     def Sync(self, _, __):
         return clock.SyncResponse(server_time=int(time.time()))
     
-    def GetTime(self, request, context):
+    def GetTime(self, _, __):
         return clock.TimeInfo(time=int(time.time()))
 
-    def UpdateTime(self, request, context):
+    def UpdateTime(self, request, _):
         self.server_time += request.offset
         return clock.UpdateTimeResponse()
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    rpc.add_ClockSyncServicer_to_server(ClockSyncServicer(), server)
+class Server():
+    def __init__(self, servicer):
+        self.servicer = servicer
     
-    print('Starting server. Listening...')
-    server.add_insecure_port('[::]:30000')
-    server.start()
-    print("Server started")
-    server.wait_for_termination()
+    def update_slave_times(self, slave_stubs):
+        while True:
+            for slave_address, stub in slave_stubs.items():
+                response = stub.GetTime(clock.GetTimeRequest())
+                self.servicer.slave_times[slave_address] = response.time
+            # NOTE: set it later if is needed
+            time.sleep(5) 
+
+    def serve():
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        rpc.add_ClockSyncServicer_to_server(ClockSyncServicer(), server)
+        
+        print('Starting server. Listening...')
+        server.add_insecure_port('[::]:30000')
+        server.start()
+        print("Server started")
+        server.wait_for_termination()
 
 if __name__ == '__main__':
-    serve()
+    server = Server(ClockSyncServicer())
+    server.serve()
