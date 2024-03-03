@@ -4,6 +4,8 @@ package clock;
 
 service ClockSync {
     rpc Sync (SyncRequest) returns (SyncResponse) {}
+    rpc GetTime (GetTimeRequest) returns (TimeInfo) {}
+    rpc UpdateTime (UpdateTimeRequest) returns (UpdateTimeResponse) {}
 }
 
 message SyncRequest {
@@ -13,3 +15,15 @@ message SyncRequest {
 message SyncResponse {
     int64 server_time = 1;
 }
+
+message GetTimeRequest {}
+
+message TimeInfo {
+    int64 time = 1;
+}
+
+message UpdateTimeRequest {
+    int64 offset = 1;
+}
+
+message UpdateTimeResponse {}
