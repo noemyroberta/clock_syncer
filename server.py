@@ -11,6 +11,13 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
     
     def Sync(self, _, __):
         return clock.SyncResponse(server_time=int(time.time()))
+    
+    def GetTime(self, request, context):
+        return clock.TimeInfo(time=int(time.time()))
+
+    def UpdateTime(self, request, context):
+        self.server_time += request.offset
+        return clock.UpdateTimeResponse()
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
