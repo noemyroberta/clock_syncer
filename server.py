@@ -31,6 +31,21 @@ class Server():
             # NOTE: set it later if is needed
             time.sleep(5) 
 
+    def adjust_slave_times(self, slave_stubs):
+        while True:
+            if len(self.servicer.slave_times) > 0:
+                len_slave_times = len(self.servicer.slave_times)
+                counter_slave_times = sum(self.servicer.slave_times.values())
+
+                average_offset =  counter_slave_times/ len_slave_times - self.servicer.server_time
+                
+                for _, stub in slave_stubs.items():
+                    stub.UpdateTime(clock.UpdateTimeRequest(offset=average_offset))
+            
+            # NOTE: set it later if is needed
+            time.sleep(10)
+
+
     def serve():
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         rpc.add_ClockSyncServicer_to_server(ClockSyncServicer(), server)
