@@ -9,21 +9,21 @@ service ClockSync {
 }
 
 message SyncRequest {
-    int64 client_time = 1;
+    float client_time = 1;
 }
 
 message SyncResponse {
-    int64 server_time = 1;
+    float server_time = 1;
 }
 
 message GetTimeRequest {}
 
 message TimeInfo {
-    int64 time = 1;
+    float time = 1;
 }
 
 message UpdateTimeRequest {
-    int64 offset = 1;
+    float offset = 1;
 }
 
 message UpdateTimeResponse {}
