@@ -1,5 +1,4 @@
 from concurrent import futures
-from datetime import datetime
 import grpc
 import threading
 import time
@@ -10,76 +9,54 @@ import proto.clock_pb2_grpc as rpc
 class ClockSyncServicer(rpc.ClockSyncServicer):
     def __init__(self, server_time: float):
         self.server_time = server_time
-        self.slave_times = {}
+        self.clients_time = {}
 
-    def Sync(self, _, __):
-        return clock.SyncResponse(server_time=float(self.server_time))
+    def Sync(self, request, context):
+        client_address = context.peer()
+        print(f'Client {client_address} requested for sync')
+        self.clients_time[client_address] = request.client_time
+        offset = get_offset(self)
+        self.server_time += offset
+        return clock.SyncResponse(server_time=float(offset))
 
-    def GetTime(self, _, __):
-        return clock.TimeInfo(time=float(self.server_time))
+    def GetTime(self, _, context):
+        new_client = context.peer()
+        print(f'Client {new_client} requested for server time')
+        self.clients_time[new_client] = None
+        return clock.TimeInfo(time=self.server_time)
 
     def UpdateTime(self, request, _):
-        self.server_time += request.offset
         return clock.UpdateTimeResponse()
 
 
-class Server():
-    def __init__(self, servicer):
-        self.servicer = servicer
+def get_offset(servicer):
+    print('Clients: ', servicer.clients_time)
 
-    def update_slave_times(self, slave_stubs):
-        while True:
-            for slave_address, stub in slave_stubs.items():
-                response = stub.GetTime(clock.GetTimeRequest())
-                self.servicer.slave_times[slave_address] = response.time
-            # NOTE: set it later if is needed
-            time.sleep(10)
+    # NOTE: sleep until there's more than one client connected
+    while len(servicer.clients_time) <= 1:
+        time.sleep(1)
 
-    def adjust_slave_times(self, slave_stubs):
-        while True:
-            if len(self.servicer.slave_times) > 0:
-                len_slave_times = len(self.servicer.slave_times)
-                counter_slave_times = sum(self.servicer.slave_times.values())
+    len_nodes = len(servicer.clients_time) + 1
+    sum_nodes_time = sum(servicer.clients_time.values()) + servicer.server_time
 
-                average_offset = counter_slave_times / \
-                    len_slave_times - self.servicer.server_time
+    # NOTE: decrease server_time to remove the "hour"
+    average_offset = sum_nodes_time / len_nodes
 
-                for _, stub in slave_stubs.items():
-                    stub.UpdateTime(clock.UpdateTimeRequest(
-                        offset=average_offset))
+    return average_offset
 
-            # NOTE: set it later if is needed
-            time.sleep(10)
 
-    def serve(self):
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        rpc.add_ClockSyncServicer_to_server(self.servicer, server)
+def serve(servicer):
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    rpc.add_ClockSyncServicer_to_server(servicer, server)
 
-        print('Starting server. Listening...')
-        server.add_insecure_port('[::]:30000')
-        server.start()
-        print("Server started")
-        server.wait_for_termination()
+    print('Starting server. Listening...')
+    server.add_insecure_port('localhost:50051')
+    server.start()
+    print("Server started")
+    server.wait_for_termination()
 
 
 if __name__ == '__main__':
-    server_time_str = input(
-        '(Server) What time is it? [##:##]').replace(':', '.')
-
+    server_time_str = input('What time is it? [##:##] ').replace(':', '.')
     servicer = ClockSyncServicer(server_time=float(server_time_str))
-    server = Server(servicer)
-    server.serve()
-
-    slave_addresses = ['localhost:30000']
-    slave_stubs = {address: rpc.ClockSyncStub(
-        grpc.insecure_channel(address)) for address in slave_addresses}
-
-    update_thread = threading.Thread(
-        target=server.update_slave_times(slave_stubs))
-    update_thread.daemon = True
-    update_thread.start()
-
-    adjust_thread = threading.Thread(
-        target=server.adjust_slave_times(slave_stubs))
-    adjust_thread.daemon = True
-    adjust_thread.start()
+    serve(servicer)

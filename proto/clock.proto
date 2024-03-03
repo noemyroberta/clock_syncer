@@ -9,7 +9,7 @@ service ClockSync {
 }
 
 message SyncRequest {
-    float client_time = 1;
+    float client_time = 2;
 }
 
 message SyncResponse {

@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11proto/clock.proto\x12\x05\x63lock\"\"\n\x0bSyncRequest\x12\x13\n\x0b\x63lient_time\x18\x01 \x01(\x02\"#\n\x0cSyncResponse\x12\x13\n\x0bserver_time\x18\x01 \x01(\x02\"\x10\n\x0eGetTimeRequest\"\x18\n\x08TimeInfo\x12\x0c\n\x04time\x18\x01 \x01(\x02\"#\n\x11UpdateTimeRequest\x12\x0e\n\x06offset\x18\x01 \x01(\x02\"\x14\n\x12UpdateTimeResponse2\xb8\x01\n\tClockSync\x12\x31\n\x04Sync\x12\x12.clock.SyncRequest\x1a\x13.clock.SyncResponse\"\x00\x12\x33\n\x07GetTime\x12\x15.clock.GetTimeRequest\x1a\x0f.clock.TimeInfo\"\x00\x12\x43\n\nUpdateTime\x12\x18.clock.UpdateTimeRequest\x1a\x19.clock.UpdateTimeResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11proto/clock.proto\x12\x05\x63lock\"\"\n\x0bSyncRequest\x12\x13\n\x0b\x63lient_time\x18\x02 \x01(\x02\"#\n\x0cSyncResponse\x12\x13\n\x0bserver_time\x18\x01 \x01(\x02\"\x10\n\x0eGetTimeRequest\"\x18\n\x08TimeInfo\x12\x0c\n\x04time\x18\x01 \x01(\x02\"#\n\x11UpdateTimeRequest\x12\x0e\n\x06offset\x18\x01 \x01(\x02\"\x14\n\x12UpdateTimeResponse2\xb8\x01\n\tClockSync\x12\x31\n\x04Sync\x12\x12.clock.SyncRequest\x1a\x13.clock.SyncResponse\"\x00\x12\x33\n\x07GetTime\x12\x15.clock.GetTimeRequest\x1a\x0f.clock.TimeInfo\"\x00\x12\x43\n\nUpdateTime\x12\x18.clock.UpdateTimeRequest\x1a\x19.clock.UpdateTimeResponse\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
