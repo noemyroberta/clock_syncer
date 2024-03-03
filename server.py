@@ -5,6 +5,10 @@ import proto.clock_pb2 as clock
 import proto.clock_pb2_grpc as rpc
 
 class ClockSyncServicer(rpc.ClockSyncServicer):
+    def __init__(self):
+        self.server_time = time.time()
+        self.slave_times = {}
+    
     def Sync(self, _, __):
         return clock.SyncResponse(server_time=int(time.time()))
 
