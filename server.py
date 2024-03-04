@@ -1,7 +1,5 @@
 from concurrent import futures
 import grpc
-import threading
-import time
 import proto.clock_pb2 as clock
 import proto.clock_pb2_grpc as rpc
 
@@ -13,11 +11,14 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
 
     def Sync(self, request, context):
         client_address = context.peer()
-        print(f'Client {client_address} requested for sync')
+        print(
+            f'Client {client_address} requested for sync with time {request.client_time}')
         self.clients_time[client_address] = request.client_time
-        offset = get_offset(self)
-        self.server_time += offset
-        return clock.SyncResponse(server_time=float(offset))
+
+        offset = get_average_offset(servicer)
+        update_server_time(servicer, offset)
+
+        return clock.SyncResponse(server_time=self.server_time)
 
     def GetTime(self, _, context):
         new_client = context.peer()
@@ -29,19 +30,24 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
         return clock.UpdateTimeResponse()
 
 
-def get_offset(servicer):
-    print('Clients: ', servicer.clients_time)
+def update_server_time(self, offset):
+    self.server_time += offset
+    print(f'Server new time is ', self.server_time)
 
-    # NOTE: sleep until there's more than one client connected
-    while len(servicer.clients_time) <= 1:
-        time.sleep(1)
 
-    len_nodes = len(servicer.clients_time) + 1
-    sum_nodes_time = sum(servicer.clients_time.values()) + servicer.server_time
+def _get_average_time(servicer):
+    sum_clients_time = sum(servicer.clients_time.values())
+    sum_clients_time += servicer.server_time
+    len_clients = len(servicer.clients_time) + 1
 
-    # NOTE: decrease server_time to remove the "hour"
-    average_offset = sum_nodes_time / len_nodes
+    return sum_clients_time / len_clients
 
+
+def get_average_offset(servicer):
+    times = servicer.clients_time.values()
+    average_time = _get_average_time(servicer)
+    offsets = [time - average_time for time in times]
+    average_offset = sum(offsets) / len(offsets)
     return average_offset
 
 

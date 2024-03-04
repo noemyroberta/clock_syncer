@@ -10,9 +10,20 @@ def run():
 
     if (response_time_request.time != None):
         print('(Server) My time is ', response_time_request.time)
-        client_time_str = input('(Client) What is your time? [##.##] ').replace(':', '.')
-        response = stub.Sync(clock.SyncRequest(client_time=float(client_time_str)))
-        print('RESPONSE: ', response.server_time)
+        client_time_str = input(
+            '(Client) What is your time? [##.##] ').replace(':', '.')
+        
+        converted_client_time = round(float(client_time_str), 2)
+        response = stub.Sync(clock.SyncRequest(
+            client_time=converted_client_time))
+        
+        print('(Server) My new time is: ', response.server_time)
+
+        client_time_before_adjustment = converted_client_time
+        offset = response.server_time - client_time_before_adjustment
+        adjusted_time = client_time_before_adjustment + offset
+        
+        print('(Client) Adjusted time to ', adjusted_time)
 
 
 if __name__ == '__main__':
