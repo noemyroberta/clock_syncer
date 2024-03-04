@@ -2,7 +2,7 @@ from concurrent import futures
 import grpc
 import proto.clock_pb2 as clock
 import proto.clock_pb2_grpc as rpc
-
+import utils
 
 class ClockSyncServicer(rpc.ClockSyncServicer):
     def __init__(self, server_time: float):
@@ -11,9 +11,10 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
 
     def Sync(self, request, context):
         client_address = context.peer()
+        client_time = round(request.client_time, 2)
         print(
-            f'Client {client_address} requested for sync with time {request.client_time}')
-        self.clients_time[client_address] = request.client_time
+            f'Client {client_address} requested for sync with time {client_time}')
+        self.clients_time[client_address] = client_time
 
         offset = get_average_offset(servicer)
         update_server_time(servicer, offset)
@@ -27,10 +28,10 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
         return clock.TimeInfo(time=self.server_time)
 
 
-
 def update_server_time(self, offset):
     self.server_time += offset
-    print(f'Server new time is ', self.server_time)
+    server_time_str = utils.float_to_time(self.server_time)
+    print(f'Server new time is ', server_time_str)
 
 
 def _get_average_time(servicer):
@@ -61,6 +62,7 @@ def serve(servicer):
 
 
 if __name__ == '__main__':
-    server_time_str = input('What time is it? [##:##] ').replace(':', '.')
-    servicer = ClockSyncServicer(server_time=float(server_time_str))
+    server_time_str = input('What time is it? [##:##] ')
+    converted_server_time = utils.time_to_float(server_time_str)
+    servicer = ClockSyncServicer(server_time=converted_server_time)
     serve(servicer)

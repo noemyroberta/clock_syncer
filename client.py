@@ -1,6 +1,7 @@
 import grpc
 import proto.clock_pb2 as clock
 import proto.clock_pb2_grpc as rpc
+import utils
 
 
 def run():
@@ -11,19 +12,21 @@ def run():
     if (response_time_request.time != None):
         print('(Server) My time is ', response_time_request.time)
         client_time_str = input(
-            '(Client) What is your time? [##.##] ').replace(':', '.')
-        
-        converted_client_time = round(float(client_time_str), 2)
+            '(Client) What is your time? [##.##] ')
+
+        converted_client_time = utils.time_to_float(client_time_str)
         response = stub.Sync(clock.SyncRequest(
             client_time=converted_client_time))
-        
-        print('(Server) My new time is: ', response.server_time)
+
+        server_time_str = utils.float_to_time(response.server_time)
+        print('(Server) My new time is: ', server_time_str)
 
         client_time_before_adjustment = converted_client_time
         offset = response.server_time - client_time_before_adjustment
         adjusted_time = client_time_before_adjustment + offset
-        
-        print('(Client) Adjusted time to ', adjusted_time)
+        adjusted_time_str = utils.float_to_time(adjusted_time)
+
+        print('(Client) Adjusted time to ', adjusted_time_str)
 
 
 if __name__ == '__main__':
