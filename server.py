@@ -12,8 +12,10 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
     def Sync(self, request, context):
         client_address = context.peer()
         client_time = round(request.client_time, 2)
+
         print(
             f'Client {client_address} requested for sync with time {client_time}')
+        
         self.clients_time[client_address] = client_time
 
         offset = get_average_offset(servicer)
