@@ -15,7 +15,7 @@ def run():
         client_time_float = utils.time_to_float(client_time_str)
 
         response = stub.Sync(clock.SyncRequest(client_time=client_time_float))
-        
+
         server_time_str = utils.float_to_time(response.server_time)
         print('(Server) My new time is: ', server_time_str)
 
