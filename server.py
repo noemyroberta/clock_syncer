@@ -26,8 +26,6 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
         self.clients_time[new_client] = None
         return clock.TimeInfo(time=self.server_time)
 
-    def UpdateTime(self, request, _):
-        return clock.UpdateTimeResponse()
 
 
 def update_server_time(self, offset):
