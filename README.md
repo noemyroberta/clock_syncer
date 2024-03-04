@@ -24,7 +24,7 @@ Pass 4.The average time difference is added to the current time at master's syst
 
 ## Install
 
-First, you get to clone the repository by running the command:
+First, you need to clone the repository by running the command:
 
 `git clone https://github.com/noemyroberta/clock_syncer.git`
 
