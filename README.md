@@ -1,16 +1,16 @@
 # Clock Syncer - Guide & Docs
 
-This project works around physical clock syncronization using Berkeley's algorithm with gRPC (Google Remote Procedure Call) technique.
+This project works around physical clock synchronization using Berkeley's algorithm with gRPC (Google Remote Procedure Call) technique.
 
 ## Berkeley's algorithm approach
 
 ### 1. Keywords
 
-- **Master daemon** or **Master node** -> **Server**: The choosen node to reference the clock's offset for slaves.
+- **Master daemon** or **Master node** -> **Server**: The chosen node to reference the clock's offset for slaves.
 
-- **Slave node** -> **Client**: Nodes in the network that requests the master's timestamp.
+- **Slave node** -> **Client**: Nodes in the network that request the master's timestamp.
 
-- **Offset**: The difference between the slave and master nodes time.
+- **Offset**: The difference between the slave and master node's time.
 
 ### 2. Approach
 
