@@ -2,6 +2,7 @@ def time_to_float(time_str):
     # Dividir a string nos ":" para obter as horas e minutos
     hours, minutes = map(int, time_str.split(':'))
     # Calcular o valor float equivalente em horas
+    print(hours, minutes)
     result = hours + minutes / 60
     return round(result, 2)
 

@@ -20,8 +20,6 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
         return clock.SyncResponse(server_time=self.server_time)
 
     def GetTime(self, _, context):
-        new_client = context.peer()
-        self.clients_time[new_client] = None
         return clock.TimeInfo(time=self.server_time)
 
 
