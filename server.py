@@ -4,6 +4,7 @@ import proto.clock_pb2 as clock
 import proto.clock_pb2_grpc as rpc
 import utils
 
+
 class ClockSyncServicer(rpc.ClockSyncServicer):
     def __init__(self, server_time: float):
         self.server_time = server_time
@@ -12,12 +13,7 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
     def Sync(self, request, context):
         client_address = context.peer()
         client_time = round(request.client_time, 2)
-
-        print(
-            f'Client {client_address} requested for sync with time {client_time}')
-
         self.clients_time[client_address] = client_time
-
         offset = get_average_offset(servicer)
         update_server_time(servicer, offset)
 
@@ -25,7 +21,6 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
 
     def GetTime(self, _, context):
         new_client = context.peer()
-        print(f'Client {new_client} requested for server time')
         self.clients_time[new_client] = None
         return clock.TimeInfo(time=self.server_time)
 
