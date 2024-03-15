@@ -19,7 +19,7 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
 
         return clock.SyncResponse(offset=self.offset)
 
-    def GetTime(self, _, context):
+    def GetTime(self, _, __):
         return clock.TimeInfo(time=self.server_time)
 
 
