@@ -18,9 +18,7 @@ def run():
         time.sleep(3)
         response = stub.Sync(clock.SyncRequest(client_time=client_time_float))
 
-        offset = utils.float_to_time(response.offset)
-
-        client_time_float += offset
+        client_time_float += response.offset
         client_time_str = utils.float_to_time(client_time_float)
 
         print('Adjusted time to ', client_time_str)
