@@ -12,7 +12,7 @@ message SyncRequest {
 }
 
 message SyncResponse {
-    float server_time = 1 ;
+    float offset = 1 ;
 }
 
 message GetTimeRequest {}
