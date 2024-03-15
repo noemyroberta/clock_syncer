@@ -16,7 +16,6 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
         client_time = round(request.client_time, 2)
         self.clients_time[client_address] = client_time
         offset = get_average_offset(servicer)
-        print('Offset: ', offset)
         update_server_time(servicer, offset)
 
         return clock.SyncResponse(offset=neg(offset))
