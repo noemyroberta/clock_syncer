@@ -24,11 +24,6 @@ class ClockSyncStub(object):
                 request_serializer=proto_dot_clock__pb2.GetTimeRequest.SerializeToString,
                 response_deserializer=proto_dot_clock__pb2.TimeInfo.FromString,
                 )
-        self.UpdateTime = channel.unary_unary(
-                '/clock.ClockSync/UpdateTime',
-                request_serializer=proto_dot_clock__pb2.UpdateTimeRequest.SerializeToString,
-                response_deserializer=proto_dot_clock__pb2.UpdateTimeResponse.FromString,
-                )
 
 
 class ClockSyncServicer(object):
@@ -46,12 +41,6 @@ class ClockSyncServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def UpdateTime(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_ClockSyncServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -64,11 +53,6 @@ def add_ClockSyncServicer_to_server(servicer, server):
                     servicer.GetTime,
                     request_deserializer=proto_dot_clock__pb2.GetTimeRequest.FromString,
                     response_serializer=proto_dot_clock__pb2.TimeInfo.SerializeToString,
-            ),
-            'UpdateTime': grpc.unary_unary_rpc_method_handler(
-                    servicer.UpdateTime,
-                    request_deserializer=proto_dot_clock__pb2.UpdateTimeRequest.FromString,
-                    response_serializer=proto_dot_clock__pb2.UpdateTimeResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -111,22 +95,5 @@ class ClockSync(object):
         return grpc.experimental.unary_unary(request, target, '/clock.ClockSync/GetTime',
             proto_dot_clock__pb2.GetTimeRequest.SerializeToString,
             proto_dot_clock__pb2.TimeInfo.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def UpdateTime(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/clock.ClockSync/UpdateTime',
-            proto_dot_clock__pb2.UpdateTimeRequest.SerializeToString,
-            proto_dot_clock__pb2.UpdateTimeResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
