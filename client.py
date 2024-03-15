@@ -15,7 +15,7 @@ def run():
     client_time_float = utils.time_to_float(client_time_str)
 
     while True:
-        time.sleep(3)
+        time.sleep(5)
         response = stub.Sync(clock.SyncRequest(client_time=client_time_float))
 
         client_time_float += response.offset

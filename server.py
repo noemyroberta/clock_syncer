@@ -18,7 +18,8 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
         offset = get_average_offset(servicer)
         update_server_time(servicer, offset)
 
-        return clock.SyncResponse(offset=neg(offset))
+        client_offset = self.server_time - client_time
+        return clock.SyncResponse(offset=client_offset)
 
     def GetTime(self, _, __):
         return clock.TimeInfo(time=self.server_time)
