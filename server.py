@@ -2,6 +2,7 @@ from concurrent import futures
 import grpc
 import proto.clock_pb2 as clock
 import proto.clock_pb2_grpc as rpc
+from operator import neg
 import utils
 
 
@@ -15,9 +16,10 @@ class ClockSyncServicer(rpc.ClockSyncServicer):
         client_time = round(request.client_time, 2)
         self.clients_time[client_address] = client_time
         offset = get_average_offset(servicer)
+        print('Offset: ', offset)
         update_server_time(servicer, offset)
 
-        return clock.SyncResponse(offset=offset)
+        return clock.SyncResponse(offset=neg(offset))
 
     def GetTime(self, _, __):
         return clock.TimeInfo(time=self.server_time)
